@@ -32,10 +32,17 @@
         @foreach($giftCards as $index => $card)
         @php $classes = $card->design_classes; @endphp
         <button @click="openModal({{ $card->toJson() }})"
-                class="fade-up-delay-{{ min($index + 1, 3) }} relative overflow-hidden rounded-2xl aspect-[3/4] bg-gradient-to-br {{ $classes['bg'] }} border {{ $classes['border'] }} shadow-lg active:scale-95 transition-transform duration-150 text-left p-4 flex flex-col justify-between group">
+                class="fade-up-delay-{{ min($index + 1, 3) }} relative overflow-hidden rounded-2xl aspect-[3/4] {{ $card->image_path ? 'bg-stone-100' : 'bg-gradient-to-br ' . $classes['bg'] }} border {{ $classes['border'] }} shadow-lg active:scale-95 transition-transform duration-150 text-left p-4 flex flex-col justify-between group">
 
-            {{-- Shimmer overlay --}}
-            <div class="absolute inset-0 shimmer opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            {{-- Imagen de fondo si fue subida por el admin --}}
+            @if($card->image_path)
+                <img src="{{ $card->image_url }}" alt="{{ $card->title }}"
+                     class="absolute inset-0 w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+            @else
+                {{-- Shimmer overlay --}}
+                <div class="absolute inset-0 shimmer opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            @endif
 
             {{-- Decoración --}}
             <div class="relative">
@@ -44,9 +51,14 @@
 
             {{-- Info --}}
             <div class="relative">
-                <p class="text-white/60 text-xs mb-1">Plantilla</p>
+                {{-- Badge de categoría --}}
+                @if($card->category)
+                    <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-white/15 text-white backdrop-blur-sm capitalize mb-1">
+                        {{ $card->category }}
+                    </span>
+                @endif
                 <p class="text-white font-semibold text-sm leading-tight">{{ $card->title }}</p>
-                @if($card->description)
+                @if($card->description && !$card->image_path)
                     <p class="{{ $classes['accent'] }} text-xs mt-1 leading-snug opacity-80">{{ Str::limit($card->description, 50) }}</p>
                 @endif
             </div>

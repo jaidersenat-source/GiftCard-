@@ -4,46 +4,94 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\GiftCard;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
-class GiftCardController extends Controller {
+class GiftCardController extends Controller
+{
+    private array $designs   = ['gold', 'rose', 'sage', 'navy', 'cream'];
+    private array $categories = ['general', 'cumpleaños', 'aniversario', 'navidad', 'san valentin', 'otro'];
 
-    public function index() {
+    public function index()
+    {
         $giftCards = GiftCard::latest()->paginate(15);
         return view('admin.gift-cards.index', compact('giftCards'));
     }
 
-    public function create() {
-        $designs = ['gold', 'rose', 'sage', 'navy', 'cream'];
-        return view('admin.gift-cards.create', compact('designs'));
+    public function create()
+    {
+        return view('admin.gift-cards.create', [
+            'designs'    => $this->designs,
+            'categories' => $this->categories,
+        ]);
     }
 
-    public function store(Request $request) {
-        $request->validate([
+    public function store(Request $request)
+    {
+        $data = $request->validate([
             'title'       => 'required|string|max:150',
-            'design'      => 'required|in:gold,rose,sage,navy,cream',
+            'category'    => 'required|in:' . implode(',', $this->categories),
+            'design'      => 'required|in:' . implode(',', $this->designs),
+            'image'       => 'nullable|image|mimes:png,jpg,jpeg|max:4096',
             'description' => 'nullable|string|max:500',
         ]);
-        GiftCard::create($request->only('title', 'design', 'description') + ['active' => $request->boolean('active', true)]);
-        return redirect()->route('admin.gift-cards.index')->with('success', 'Plantilla creada.');
+
+        if ($request->hasFile('image')) {
+            $data['image_path'] = $request->file('image')
+                ->store('gift-cards', 'public');
+        }
+
+        unset($data['image']);
+
+        GiftCard::create($data + ['active' => $request->boolean('active', true)]);
+
+        return redirect()->route('admin.gift-cards.index')
+            ->with('success', 'Plantilla creada.');
     }
 
-    public function edit(GiftCard $giftCard) {
-        $designs = ['gold', 'rose', 'sage', 'navy', 'cream'];
-        return view('admin.gift-cards.edit', compact('giftCard', 'designs'));
+    public function edit(GiftCard $giftCard)
+    {
+        return view('admin.gift-cards.edit', [
+            'giftCard'   => $giftCard,
+            'designs'    => $this->designs,
+            'categories' => $this->categories,
+        ]);
     }
 
-    public function update(Request $request, GiftCard $giftCard) {
-        $request->validate([
+    public function update(Request $request, GiftCard $giftCard)
+    {
+        $data = $request->validate([
             'title'       => 'required|string|max:150',
-            'design'      => 'required|in:gold,rose,sage,navy,cream',
+            'category'    => 'required|in:' . implode(',', $this->categories),
+            'design'      => 'required|in:' . implode(',', $this->designs),
+            'image'       => 'nullable|image|mimes:png,jpg,jpeg|max:4096',
             'description' => 'nullable|string|max:500',
         ]);
-        $giftCard->update($request->only('title', 'design', 'description') + ['active' => $request->boolean('active')]);
-        return redirect()->route('admin.gift-cards.index')->with('success', 'Plantilla actualizada.');
+
+        if ($request->hasFile('image')) {
+            // Borra la imagen anterior si existe
+            if ($giftCard->image_path) {
+                Storage::disk('public')->delete($giftCard->image_path);
+            }
+            $data['image_path'] = $request->file('image')
+                ->store('gift-cards', 'public');
+        }
+
+        unset($data['image']);
+
+        $giftCard->update($data + ['active' => $request->boolean('active')]);
+
+        return redirect()->route('admin.gift-cards.index')
+            ->with('success', 'Plantilla actualizada.');
     }
 
-    public function destroy(GiftCard $giftCard) {
+    public function destroy(GiftCard $giftCard)
+    {
+        if ($giftCard->image_path) {
+            Storage::disk('public')->delete($giftCard->image_path);
+        }
         $giftCard->delete();
-        return redirect()->route('admin.gift-cards.index')->with('success', 'Plantilla eliminada.');
+
+        return redirect()->route('admin.gift-cards.index')
+            ->with('success', 'Plantilla eliminada.');
     }
 }

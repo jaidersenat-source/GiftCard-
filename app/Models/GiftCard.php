@@ -7,13 +7,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class GiftCard extends Model {
     use HasFactory;
 
-    protected $fillable = ['title', 'design', 'description', 'active'];
+    protected $fillable = ['title', 'design', 'image_path', 'category', 'description', 'active'];
 
     protected $casts = ['active' => 'boolean'];
 
     public function gifts() {
         return $this->hasMany(Gift::class);
     }
+
+    public function getImageUrlAttribute(): ?string
+{
+    return $this->image_path
+        ? asset('storage/' . $this->image_path)
+        : null;
+}
 
     /** Retorna clases Tailwind según el diseño */
     public function getDesignClassesAttribute(): array {
