@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" type="image/png" href="/img/logo.png">
     <title>Tarjeta para {{ $gift->recipient_name }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
@@ -49,11 +50,52 @@
             z-index: 10;
         }
 
-        /* Textos sobre imagen */
-        .on-img-label   { color: rgba(255,255,255,0.65); font-size: 0.65rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
-        .on-img-name    { color: #ffffff; font-size: clamp(2.8rem, 12vw, 3.5rem); line-height: 1.05; }
-        .on-img-message { color: rgba(255,255,255,0.88); font-size: 1.15rem; font-style: italic; line-height: 1.6; }
-        .on-img-muted   { color: rgba(255,255,255,0.55); font-size: 0.75rem; }
+       /* Textos sobre imagen */
+.on-img-label {
+    color: rgba(255,255,255,0.85);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-shadow:
+        -1px -1px 0 rgba(0,0,0,0.9),
+         1px -1px 0 rgba(0,0,0,0.9),
+        -1px  1px 0 rgba(0,0,0,0.9),
+         1px  1px 0 rgba(0,0,0,0.9),
+         0 2px 8px rgba(0,0,0,0.7);
+}
+.on-img-name {
+    color: #ffffff;
+    font-size: clamp(2.8rem, 12vw, 3.5rem);
+    line-height: 1.05;
+    text-shadow:
+        -2px -2px 0 rgba(0,0,0,0.85),
+         2px -2px 0 rgba(0,0,0,0.85),
+        -2px  2px 0 rgba(0,0,0,0.85),
+         2px  2px 0 rgba(0,0,0,0.85),
+         0 4px 16px rgba(0,0,0,0.6);
+}
+.on-img-message {
+    color: #ffffff;
+    font-size: 1.15rem;
+    font-style: italic;
+    line-height: 1.6;
+    text-shadow:
+        -1px -1px 0 rgba(0,0,0,0.9),
+         1px -1px 0 rgba(0,0,0,0.9),
+        -1px  1px 0 rgba(0,0,0,0.9),
+         1px  1px 0 rgba(0,0,0,0.9),
+         0 2px 10px rgba(0,0,0,0.6);
+}
+.on-img-muted {
+    color: rgba(255,255,255,0.9);
+    font-size: 0.75rem;
+    text-shadow:
+        -1px -1px 0 rgba(0,0,0,0.8),
+         1px -1px 0 rgba(0,0,0,0.8),
+        -1px  1px 0 rgba(0,0,0,0.8),
+         1px  1px 0 rgba(0,0,0,0.8);
+}
 
         /* Badge de categoría sobre imagen */
         .cat-badge {
