@@ -1,8 +1,46 @@
-
 @extends('layouts.app')
 @section('title', 'Elige tu tarjeta')
 
 @section('content')
+<style>
+    /* ── Escala responsiva para móvil ── */
+    .card-scaler {
+        width: 600px;
+        transform-origin: top center;
+    }
+
+    @media (max-width: 640px) {
+        .card-scaler {
+            transform: scale(calc((100vw - 32px) / 600));
+            margin-bottom: calc((960px * ((100vw - 32px) / 600)) - 960px);
+        }
+    }
+
+    /* ── Grid de tarjetas fijo ── */
+    .cards-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        width: 600px;
+    }
+
+    .gift-card-thumb {
+        width: 100%;
+        aspect-ratio: 3 / 4;
+        border-radius: 20px;
+        overflow: hidden;
+        position: relative;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .gift-card-thumb:active {
+        transform: scale(0.95);
+    }
+    .gift-card-thumb:hover {
+        box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+    }
+</style>
+
 <div x-data="{
     modalOpen: false,
     selectedCard: null,
@@ -27,43 +65,49 @@
         <p class="text-stone-500 text-sm mt-2">Elige un diseño y personalízalo</p>
     </div>
 
-    {{-- GRID DE TARJETAS --}}
-    <div class="grid grid-cols-2 gap-3">
-        @foreach($giftCards as $index => $card)
-        @php $classes = $card->design_classes; @endphp
-        <button @click="openModal({{ $card->toJson() }})"
-                class="fade-up-delay-{{ min($index + 1, 3) }} relative overflow-hidden rounded-2xl aspect-[3/4] {{ $card->image_path ? 'bg-stone-100' : 'bg-gradient-to-br ' . $classes['bg'] }} border {{ $classes['border'] }} shadow-lg active:scale-95 transition-transform duration-150 text-left p-4 flex flex-col justify-between group">
+    {{-- GRID DE TARJETAS con escala responsiva --}}
+    <div class="card-scaler" style="margin: 0 auto;">
+        <div class="cards-grid">
+            @foreach($giftCards as $index => $card)
+            @php $classes = $card->design_classes; @endphp
 
-            {{-- Imagen de fondo si fue subida por el admin --}}
-            @if($card->image_path)
-                <img src="{{ $card->image_url }}" alt="{{ $card->title }}"
-                     class="absolute inset-0 w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
-            @else
-                {{-- Shimmer overlay --}}
-                <div class="absolute inset-0 shimmer opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            @endif
+            <button @click="openModal({{ $card->toJson() }})"
+                    class="gift-card-thumb fade-up-delay-{{ min($index + 1, 3) }} {{ $card->image_path ? 'bg-stone-100' : 'bg-gradient-to-br ' . $classes['bg'] }} border {{ $classes['border'] }} shadow-lg text-left group">
 
-            {{-- Decoración --}}
-            <div class="relative">
-                <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-lg">🎁</div>
-            </div>
-
-            {{-- Info --}}
-            <div class="relative">
-                {{-- Badge de categoría --}}
-                @if($card->category)
-                    <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-white/15 text-white backdrop-blur-sm capitalize mb-1">
-                        {{ $card->category }}
-                    </span>
+                {{-- Imagen de fondo si fue subida por el admin --}}
+                @if($card->image_path)
+                    <img src="{{ $card->image_url }}" alt="{{ $card->title }}"
+                         class="absolute inset-0 w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+                @else
+                    {{-- Shimmer overlay --}}
+                    <div class="absolute inset-0 shimmer opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 @endif
-                <p class="text-white font-semibold text-sm leading-tight">{{ $card->title }}</p>
-                @if($card->description && !$card->image_path)
-                    <p class="{{ $classes['accent'] }} text-xs mt-1 leading-snug opacity-80">{{ Str::limit($card->description, 50) }}</p>
-                @endif
-            </div>
-        </button>
-        @endforeach
+
+                {{-- Contenido sobre imagen --}}
+                <div class="absolute inset-0 flex flex-col justify-between p-5">
+                    {{-- Decoración --}}
+                    <div>
+                        <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xl">🎁</div>
+                    </div>
+
+                    {{-- Info --}}
+                    <div>
+                        @if($card->category)
+                            <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-white/15 text-white backdrop-blur-sm capitalize mb-1">
+                                {{ $card->category }}
+                            </span>
+                        @endif
+                        <p class="text-white font-semibold text-base leading-tight">{{ $card->title }}</p>
+                        @if($card->description && !$card->image_path)
+                            <p class="{{ $classes['accent'] }} text-xs mt-1 leading-snug opacity-80">{{ Str::limit($card->description, 60) }}</p>
+                        @endif
+                    </div>
+                </div>
+            </button>
+
+            @endforeach
+        </div>
     </div>
 
     {{-- SEPARADOR --}}
@@ -179,7 +223,6 @@
     @if($errors->any())
     <script>
         document.addEventListener('alpine:init', () => {
-            // Auto-abre el modal si viene de un error
             window.setTimeout(() => {
                 document.querySelector('[x-data]').__x.$data.modalOpen = true;
             }, 100);

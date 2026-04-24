@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" type="image/png" href="/img/logo.png">
+    <link rel="icon" type="image/png" href="/img/logo.png">
     <title>Tarjeta para {{ $gift->recipient_name }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
@@ -50,52 +50,52 @@
             z-index: 10;
         }
 
-       /* Textos sobre imagen */
-.on-img-label {
-    color: rgba(255,255,255,0.85);
-    font-size: 0.65rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    text-shadow:
-        -1px -1px 0 rgba(0,0,0,0.9),
-         1px -1px 0 rgba(0,0,0,0.9),
-        -1px  1px 0 rgba(0,0,0,0.9),
-         1px  1px 0 rgba(0,0,0,0.9),
-         0 2px 8px rgba(0,0,0,0.7);
-}
-.on-img-name {
-    color: #ffffff;
-    font-size: clamp(2.8rem, 12vw, 3.5rem);
-    line-height: 1.05;
-    text-shadow:
-        -2px -2px 0 rgba(0,0,0,0.85),
-         2px -2px 0 rgba(0,0,0,0.85),
-        -2px  2px 0 rgba(0,0,0,0.85),
-         2px  2px 0 rgba(0,0,0,0.85),
-         0 4px 16px rgba(0,0,0,0.6);
-}
-.on-img-message {
-    color: #ffffff;
-    font-size: 1.15rem;
-    font-style: italic;
-    line-height: 1.6;
-    text-shadow:
-        -1px -1px 0 rgba(0,0,0,0.9),
-         1px -1px 0 rgba(0,0,0,0.9),
-        -1px  1px 0 rgba(0,0,0,0.9),
-         1px  1px 0 rgba(0,0,0,0.9),
-         0 2px 10px rgba(0,0,0,0.6);
-}
-.on-img-muted {
-    color: rgba(255,255,255,0.9);
-    font-size: 0.75rem;
-    text-shadow:
-        -1px -1px 0 rgba(0,0,0,0.8),
-         1px -1px 0 rgba(0,0,0,0.8),
-        -1px  1px 0 rgba(0,0,0,0.8),
-         1px  1px 0 rgba(0,0,0,0.8);
-}
+        /* Textos sobre imagen */
+        .on-img-label {
+            color: rgba(255,255,255,0.85);
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            text-shadow:
+                -1px -1px 0 rgba(0,0,0,0.9),
+                 1px -1px 0 rgba(0,0,0,0.9),
+                -1px  1px 0 rgba(0,0,0,0.9),
+                 1px  1px 0 rgba(0,0,0,0.9),
+                 0 2px 8px rgba(0,0,0,0.7);
+        }
+        .on-img-name {
+            color: #ffffff;
+            font-size: clamp(2.8rem, 12vw, 3.5rem);
+            line-height: 1.05;
+            text-shadow:
+                -2px -2px 0 rgba(0,0,0,0.85),
+                 2px -2px 0 rgba(0,0,0,0.85),
+                -2px  2px 0 rgba(0,0,0,0.85),
+                 2px  2px 0 rgba(0,0,0,0.85),
+                 0 4px 16px rgba(0,0,0,0.6);
+        }
+        .on-img-message {
+            color: #ffffff;
+            font-size: 1.15rem;
+            font-style: italic;
+            line-height: 1.6;
+            text-shadow:
+                -1px -1px 0 rgba(0,0,0,0.9),
+                 1px -1px 0 rgba(0,0,0,0.9),
+                -1px  1px 0 rgba(0,0,0,0.9),
+                 1px  1px 0 rgba(0,0,0,0.9),
+                 0 2px 10px rgba(0,0,0,0.6);
+        }
+        .on-img-muted {
+            color: rgba(255,255,255,0.9);
+            font-size: 0.75rem;
+            text-shadow:
+                -1px -1px 0 rgba(0,0,0,0.8),
+                 1px -1px 0 rgba(0,0,0,0.8),
+                -1px  1px 0 rgba(0,0,0,0.8),
+                 1px  1px 0 rgba(0,0,0,0.8);
+        }
 
         /* Badge de categoría sobre imagen */
         .cat-badge {
@@ -139,20 +139,34 @@
             background: rgba(255,255,255,0.18);
             margin: 1.5rem 0;
         }
+
+        /* ── Escala responsiva para móvil ── */
+        .card-scaler {
+            width: 600px;
+            transform-origin: top center;
+        }
+
+        @media (max-width: 640px) {
+            .card-scaler {
+                transform: scale(calc((100vw - 32px) / 600));
+                margin-bottom: calc((960px * ((100vw - 32px) / 600)) - 960px);
+            }
+        }
     </style>
 </head>
 
 <body class="min-h-screen flex flex-col items-center justify-center"
       style="padding: 24px 16px; background: #f5f0eb;">
 
-    <div class="relative w-full reveal" style="max-width: 420px;">
+    <div class="card-scaler">
+    <div class="relative reveal" style="width: 600px;">
 
         {{-- ══ TARJETA PRINCIPAL ══ --}}
         @php $classes = $gift->giftCard->design_classes; @endphp
 
         @if($gift->giftCard->image_path)
         {{-- ── Versión con imagen de fondo ── --}}
-        <div class="gift-card-bg" style="min-height: 580px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div class="gift-card-bg" style="width: 600px; height: 960px; display: flex; flex-direction: column; justify-content: space-between;">
 
             {{-- Imagen de fondo --}}
             <img src="{{ $gift->giftCard->image_url }}"
@@ -163,7 +177,7 @@
             <div class="card-overlay"></div>
 
             {{-- Contenido encima --}}
-            <div class="card-content" style="padding: 28px 28px 32px; display: flex; flex-direction: column; min-height: 580px; justify-content: space-between;">
+            <div class="card-content" style="padding: 40px 40px 44px; display: flex; flex-direction: column; height: 960px; justify-content: space-between;">
 
                 {{-- Top: plantilla + categoría --}}
                 <div style="display: flex; align-items: flex-start; justify-content: space-between;">
@@ -204,7 +218,7 @@
 
         @else
         {{-- ── Versión sin imagen (fallback color) ── --}}
-        <div class="card overflow-hidden" style="min-height: 520px; display: flex; flex-direction: column;">
+        <div class="card overflow-hidden" style="width: 600px; height: 960px; display: flex; flex-direction: column;">
             <div class="h-1.5 w-full bg-gradient-to-r {{ $classes['bg'] }}"></div>
             <div class="p-7" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
                 <div class="flex items-center justify-between mb-7">
@@ -255,6 +269,8 @@
         <p class="text-center reveal-2" style="font-size: 0.7rem; color: rgba(0,0,0,0.35); margin-top: 20px;">
             Café Gift Cards · Hecho con amor ☕
         </p>
+
+    </div>
     </div>
 
     <script>
